@@ -1,0 +1,32 @@
+  TCP Shunt
+=============
+
+For network-capacity-constrained load balancing. Allows a process to hand an
+open TCP IP connection to another server. If the other server also has TCP
+shunt installed it will do Direct Server Response - responding to the client
+directly as if it were the original server. Otherwise it will act essentially
+as a transparent proxy with data still flowing through the first server but
+being handled by the second (so still job-balancing but doesn't really help the
+network load in that case).
+
+Linux only, implemented as a loadable linux module(s). Being developed at the
+moment against Linux 2.6.31.
+
+KEYWORDS:
+
+tcp-splice, tcp-handoff, tcp-handover, tcpha, layer-3-switch, layer-7-switch, NAT, DNAT, SNAT
+
+EXAMPLE:
+
+1. client attempts to establish conn. on server1:80
+2. server1 `accept()` and possibly does some work w/ connection
+3. server1 does an ioctl call on the socket's fd saying it wants to hand the
+   tcp connection over to server2:8080 - and specifies data it wants to send to
+   server2:8080 as if it came from the client.
+4. server2:8080 accept()s connection from server1 and gets data sent as if it's
+   from a client.
+5. server2:8080 talks to client directoy, masquerading as server1:80.
+6. client is still talkng to server1:80, which is forwarding everything to server2:8080.
+
+
+see more documentation under ./doc/
